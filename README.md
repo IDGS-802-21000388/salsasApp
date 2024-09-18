@@ -10,7 +10,7 @@ Este proyecto utiliza [versionamiento semántico](https://semver.org/lang/es/) p
 
 ![Version](https://img.shields.io/badge/version-v1.0.0-blue)
 
-La versión actual del proyecto es **v1.0.0**.
+La versión actual es **v1.0.1**. Puedes ver todos los [Releases aquí](https://github.com/IDGS-802-21000388/salsasApp/releases/tag/v1.0.0).
 
 - **MAJOR**: Nuevos módulos que afectan la arquitectura del sistema o las interfaces existentes.
 - **MINOR**: Mejoras en los módulos existentes sin romper la compatibilidad.
