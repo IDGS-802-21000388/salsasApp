@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { Box, Input, Button, Text, VStack, Center, HStack, Link, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
-import useLoginViewModel from '../viewmodels/LoginViewModel';
+import useLoginViewModel from '../viewmodels/AuthViewModel';
 
 export default function LoginScreen() {
   const { email, setEmail, password, setPassword, handleLogin, isLoading, error } = useLoginViewModel();
@@ -43,18 +43,26 @@ export default function LoginScreen() {
               }}
             />
             {error && <Text color="red.500" textAlign="center">{error}</Text>}
-            <Button mt="5" onPress={handleLogin} isLoading={isLoading} borderRadius="full" backgroundColor="#FFFFFF" _text={{ color: "#000000" }}>
+            <Button
+              mt="5"
+              onPress={handleLogin}
+              isLoading={isLoading}
+              borderRadius="full"
+              backgroundColor="#FFFFFF"
+              _text={{ color: "#000000" }}
+            >
               Login
             </Button>
             <HStack mt="6" justifyContent="center">
               <Text fontSize="sm" color="white">Don't have an account? </Text>
+              {/* Navega a la pantalla de registro de usuario */}
               <Link
                 _text={{
                   color: '#FFFFFF',
                   fontWeight: 'medium',
                   fontSize: 'sm',
                 }}
-                href="#"
+                onPress={() => navigation.navigate('AppTabs', { screen: 'CreateUser' })}
               >
                 Register
               </Link>
