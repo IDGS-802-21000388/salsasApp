@@ -1,86 +1,66 @@
-import * as React from 'react';
-import { View, StyleSheet, Dimensions, SafeAreaView } from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
-import ProductScreen from './views/ProductScreen';
-import LoginScreen from './views/LoginScreen';
+import React from 'react';
 import { NativeBaseProvider } from 'native-base';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import MateriaPrimaScreen from './views/MateriaPrimaScreen';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from './navigation/AppNavigator';
+import { ToastProvider } from 'react-native-toast-notifications';
+import { View, Text, StyleSheet } from 'react-native';
 
-const FirstRoute = () => (
-  <ProductScreen />
+const CustomToast = ({ text1, text2, type }) => (
+  <View
+    style={[
+      styles.toastContainer,
+      { borderLeftColor: type === 'success' ? 'green' : 'red' },
+    ]}
+  >
+    {text1 && <Text style={styles.toastTitle}>{text1}</Text>}
+    {text2 && <Text style={styles.toastMessage}>{text2}</Text>}
+  </View>
 );
 
-const SecondRoute = () => (
-  <LoginScreen />
-);
+const styles = StyleSheet.create({
+  toastContainer: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    borderLeftWidth: 5,
+    marginVertical: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 5,
+  },
+  toastTitle: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  toastMessage: {
+    fontSize: 14,
+  },
+});
 
 const ThirdRoute = () => (
   <MateriaPrimaScreen />
 );
 
 export default function App() {
-  const [index, setIndex] = React.useState(0);
-  const [routes] = React.useState([
-    { key: 'first', title: 'Home' },
-    { key: 'second', title: 'Login' },
-    { key: 'third', title: 'Materias Primas' },
-  ]);
-
   return (
     <NativeBaseProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={SceneMap({
-            first: FirstRoute,
-            second: SecondRoute,
-            third: ThirdRoute,
-          })}
-          onIndexChange={setIndex}
-          initialLayout={{ width: Dimensions.get('window').width }}
-          renderTabBar={(props) => (
-            <TabBar
-              {...props}
-              indicatorStyle={{ backgroundColor: '#217765' }}
-              style={styles.tabBar}
-              labelStyle={styles.labelStyle}
-            />
-          )}
-        />
-
-        {/* Carrito flotante */}
-        <TouchableOpacity style={styles.cartButton} onPress={() => alert('Carrito')}>
-          <Ionicons name="cart" size={30} color="white" />
-        </TouchableOpacity>
-      </SafeAreaView>
+      <ToastProvider
+        placement="bottom"
+        duration={5000}
+        swipeEnabled={true}
+        animationType="slide-in"
+        offset={50}
+        renderToast={(toastOptions) => <CustomToast {...toastOptions} />}
+      >
+        <NavigationContainer>
+          <AppNavigator />
+        </NavigationContainer>
+      </ToastProvider>
     </NativeBaseProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: 'white',
-    position: 'absolute',
-    bottom: 0,  
-    left: 0,
-    right: 0,
-  },
-  labelStyle: {
-    color: '#217765',
-    fontWeight: 'bold',
-  },
-  cartButton: {
-    position: 'absolute',
-    bottom: 90,  
-    right: 20,
-    backgroundColor: '#c31a23',
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 5,
-  },
-});
