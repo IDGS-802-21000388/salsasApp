@@ -2,10 +2,10 @@ import React from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
 import { Box, Input, Button, Text, VStack, Center, HStack, Link, Icon } from 'native-base';
 import { MaterialIcons } from '@expo/vector-icons';
-import useLoginViewModel from '../viewmodels/AuthViewModel';
+import useLoginViewModel from '../viewmodels/LoginViewModel'; // Importa el ViewModel
 
-export default function LoginScreen() {
-  const { email, setEmail, password, setPassword, handleLogin, isLoading, error } = useLoginViewModel();
+export default function LoginScreen({ navigation }) {
+  const { email, setEmail, password, setPassword, handleLogin, isLoading, error } = useLoginViewModel(navigation); // Pasa la navegación aquí
 
   return (
     <ImageBackground source={require('../assets/images/background-login.jpg')} style={styles.backgroundImage}>
@@ -18,7 +18,7 @@ export default function LoginScreen() {
             <Input
               placeholder="Email"
               value={email}
-              onChangeText={(text) => setEmail(text)}
+              onChangeText={setEmail}
               InputLeftElement={<Icon as={<MaterialIcons name="person" />} size={6} ml="2" color="white" />}
               variant="rounded"
               placeholderTextColor="white"
@@ -31,7 +31,7 @@ export default function LoginScreen() {
             <Input
               placeholder="Password"
               value={password}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
               secureTextEntry
               InputLeftElement={<Icon as={<MaterialIcons name="lock" />} size={6} ml="2" color="white" />}
               variant="rounded"
@@ -45,7 +45,7 @@ export default function LoginScreen() {
             {error && <Text color="red.500" textAlign="center">{error}</Text>}
             <Button
               mt="5"
-              onPress={handleLogin}
+              onPress={handleLogin} // Llama a handleLogin aquí
               isLoading={isLoading}
               borderRadius="full"
               backgroundColor="#FFFFFF"
@@ -55,14 +55,13 @@ export default function LoginScreen() {
             </Button>
             <HStack mt="6" justifyContent="center">
               <Text fontSize="sm" color="white">Don't have an account? </Text>
-              {/* Navega a la pantalla de registro de usuario */}
               <Link
                 _text={{
                   color: '#FFFFFF',
                   fontWeight: 'medium',
                   fontSize: 'sm',
                 }}
-                onPress={() => navigation.navigate('AppTabs', { screen: 'CreateUser' })}
+                onPress={() => navigation.navigate('CreateUser')}
               >
                 Register
               </Link>
