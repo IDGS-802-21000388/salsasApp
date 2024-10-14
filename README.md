@@ -4,7 +4,7 @@ Este proyecto gestiona las ventas y el inventario para la empresa Salsas Reni.
 
 ### Versión actual
 
-![Version](https://img.shields.io/badge/version-v1.0.0-blue)
+![Version](https://img.shields.io/badge/version-v1.1.0-blue)
 
 - **MAJOR**: Nuevos módulos que afectan la arquitectura del sistema o las interfaces existentes.
 - **MINOR**: Mejoras en los módulos existentes sin romper la compatibilidad.

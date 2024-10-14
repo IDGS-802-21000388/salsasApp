@@ -1,11 +1,9 @@
 import React from 'react';
 import { NativeBaseProvider } from 'native-base';
-import { TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import MateriaPrimaScreen from './views/MateriaPrimaScreen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Importa esto
+import { ToastProvider } from 'react-native-toast-notifications';
 import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './navigation/AppNavigator';
-import { ToastProvider } from 'react-native-toast-notifications';
 import { View, Text, StyleSheet } from 'react-native';
 
 const CustomToast = ({ text1, text2, type }) => (
@@ -42,25 +40,23 @@ const styles = StyleSheet.create({
   },
 });
 
-const ThirdRoute = () => (
-  <MateriaPrimaScreen />
-);
-
 export default function App() {
   return (
-    <NativeBaseProvider>
-      <ToastProvider
-        placement="bottom"
-        duration={5000}
-        swipeEnabled={true}
-        animationType="slide-in"
-        offset={50}
-        renderToast={(toastOptions) => <CustomToast {...toastOptions} />}
-      >
-        <NavigationContainer>
-          <AppNavigator />
-        </NavigationContainer>
-      </ToastProvider>
-    </NativeBaseProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NativeBaseProvider>
+        <ToastProvider
+          placement="bottom"
+          duration={5000}
+          swipeEnabled={true}
+          animationType="slide-in"
+          offset={50}
+          renderToast={(toastOptions) => <CustomToast {...toastOptions} />}
+        >
+          <NavigationContainer>
+            <AppNavigator />
+          </NavigationContainer>
+        </ToastProvider>
+      </NativeBaseProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Box, Text, Center } from 'native-base';
+import { Box, Text, Center, Button } from 'native-base';
+import { DrawerActions } from '@react-navigation/native';
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   return (
     <Box flex={1} p={4} backgroundColor="#f7f5f2">
       <Center>
@@ -11,6 +12,7 @@ const HomeScreen = () => {
         <Text fontSize="lg" mt={4} color="#c31a23">
           Aquí puedes navegar entre los módulos de la aplicación.
         </Text>
+        
       </Center>
     </Box>
   );

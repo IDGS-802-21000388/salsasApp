@@ -1,11 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = 'http://192.168.1.11:7215/api/Login';
+const API_URL = 'http://192.168.1.10:5042/api/Login/login';
 
-// Servicio de autenticación
 export const LoginService = async (email, password) => {
     try {
-        const response = await fetch(`${API_URL}/login`, {
+        const response = await fetch(API_URL, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -22,7 +21,7 @@ export const LoginService = async (email, password) => {
         }
 
         const data = await response.json();
-        await AsyncStorage.setItem('user', JSON.stringify(data)); // Guarda el objeto completo
+        await AsyncStorage.setItem('user', JSON.stringify(data));
 
         return data;
     } catch (error) {
@@ -31,7 +30,6 @@ export const LoginService = async (email, password) => {
     }
 };
 
-// Servicio para cerrar sesión
-const logout = async () => {
+export const logout = async () => {
   await AsyncStorage.removeItem('user');
 };

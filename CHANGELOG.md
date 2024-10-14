@@ -1,9 +1,9 @@
 # Changelog
 
 ## Edwin Yovani Rodriguez Rivera
-## v1.0.0 - 2024-09-19
+## v1.1.0 - 2024-10-13
 ### Agregado
-- Inicio de Proyecto
+- Nueva Barra de Navegacion Lateral
 
 ### Corregido
 - 
