@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_BASE_URL } from '@env';
 
-const API_URL = 'http://192.168.1.10:5042/api/Login/login';
+
+const API_URL = `${API_BASE_URL}/Login/login`;
 
 export const LoginService = async (email, password) => {
     try {
