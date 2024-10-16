@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@env';
 
-const API_URL = 'https://localhost:7215/api/MateriaPrima';
+const API_URL = `${API_BASE_URL}/MateriaPrima`;
 
 export const getProducts = async () => {
   try {

@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@env';
 
-
-const API_URL_SALE_DETAILS = 'http://localhost:7215/api/Ventum';
+const API_URL_SALE_DETAILS = `${API_BASE_URL}/Ventum`;
 
 export const getSaleDetails = async () => {
   try {

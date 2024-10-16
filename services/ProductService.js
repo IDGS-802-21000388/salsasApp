@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@env';
 
-const API_URL = 'http://192.168.1.65:7215/api/Producto';
+const API_URL = `${API_BASE_URL}/Producto`;
 
 export const getProducts = async () => {
   try {

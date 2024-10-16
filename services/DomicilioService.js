@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@env';
 
-const API_URL_DOMICILIO = 'http://localhost:7215/api/Direccion';
+const API_URL_DOMICILIO = `${API_BASE_URL}/Direccion`;
 
 export const getDomicilios = async () => {
   try {
