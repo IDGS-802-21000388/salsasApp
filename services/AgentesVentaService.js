@@ -1,4 +1,6 @@
-const API_URL = 'http://192.168.1.68:7215/api/AgentesVenta';
+import { API_BASE_URL } from '@env';
+
+const API_URL = `${API_BASE_URL}/AgentesVenta`;
 
 export const createAgenteVenta = async (idCliente) => {
   try {
