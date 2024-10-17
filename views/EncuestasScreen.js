@@ -63,7 +63,7 @@ function EncuestasScreen() {
 
     const interval = setInterval(() => {
       fetchEncuestas();
-    }, 2000000);
+    }, 100000);
 
     return () => clearInterval(interval);
   }, []);
@@ -112,34 +112,75 @@ function EncuestasScreen() {
     }
   };
 
-  const sendEmail = (email) => {
-    const subject = "Resultados de Encuesta y Ticket de Compra";
-    const body =
-      "Aquí tienes los resultados de la encuesta y tu ticket de compra.";
-    Linking.openURL(
-      `mailto:${email}?subject=${encodeURIComponent(
-        subject
-      )}&body=${encodeURIComponent(body)}`
-    );
+  const sendEmail = async (email) => {
+    if (!selectedVenta || products.length === 0) {
+      console.error("No hay detalles de venta o productos disponibles para enviar.");
+      return;
+    }
+  
+    const subject = "Detalles de tu compra y encuesta de satisfacción";
+    let body = "<p>Gracias por tu compra. Aquí tienes los detalles de tu venta:</p>";
+  
+    body += `<p><strong>Cantidad:</strong> ${selectedVenta.cantidad}</p>`;
+    body += `<p><strong>Total:</strong> ${selectedVenta.subtotal}</p>`;
+    
+    body += "<p><strong>Productos:</strong></p><ul>";
+    products.forEach((product) => {
+      body += `<li>${product.nombreProducto}`;
+      if (product.fotografia) {
+        body += `<br/><img src="${product.fotografia}" width="100"/>`;
+      } else {
+        body += "<br/>No hay imagen disponible.";
+      }
+      body += `</li>`;
+    });
+    body += "</ul>";
+  
+    body += "<p>Puedes visitar nuestra página en el siguiente enlace:</p>";
+    body += '<p><a href="https://www.tupagina.com">Visitar nuestra página</a></p>';
+  
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': 're_hweJYdWb_FSohTFiABsi6aw8HdXcL8Rye', // Reemplaza con tu token real
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: "Acme <onboarding@resend.dev>",
+          to: [email],
+          subject: subject,
+          html: body
+        })
+      });
+  
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Correo enviado exitosamente:", result);
+      } else {
+        console.log("Error al enviar el correo:", response.status, await response.text());
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+    }
   };
+  
 
   const chartData = {
     labels: ["Proceso", "Sabor", "Entrega", "Pres", "Faci"],
     datasets: [
       {
-        data: filteredEncuestas.reduce(
-          (acc, encuesta) => [
-            acc[0] + encuesta.procesoCompra,
-            acc[1] + encuesta.saborProducto,
-            acc[2] + encuesta.entregaProducto,
-            acc[3] + encuesta.presentacionProducto,
-            acc[4] + encuesta.facilidadUsoPagina,
-          ],
-          [0, 0, 0, 0, 0]
-        ),
-      },
+        data: [
+          filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.procesoCompra, -9),
+          filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.saborProducto, 0),
+          filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.entregaProducto, 0),
+          filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.presentacionProducto, 0),
+          filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.facilidadUsoPagina, 0),
+        ],
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`      },
     ],
   };
+  
 
   const classifySatisfaction = (encuesta) => {
     const ratings = [
@@ -220,23 +261,32 @@ function EncuestasScreen() {
       </View>
 
       <BarChart
-        data={chartData}
-        width={screenWidth - 40}
-        height={220}
-        yAxisLabel=""
-        chartConfig={{
-          backgroundColor: "#980a00",
-          decimalPlaces: 0,
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
-        }}
-        style={{
-          marginVertical: 5,
-          borderRadius: 5,
-        }}
-      />
+  data={chartData}
+  width={screenWidth - 20}
+  height={230}
+  fromZero={true} // Asegura que el eje Y empiece en 0
+  chartConfig={{
+    backgroundColor: "#ffffff",
+    backgroundGradientFrom: "#980900",
+    backgroundGradientTo: "#980900",
+    decimalPlaces: 0,
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Color de las barras
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Color de las etiquetas
+    style: {
+      borderRadius: 16,
+    },
+    propsForDots: {
+      r: "6",
+      strokeWidth: "1",
+      stroke: "#ffa726",
+    },
+  }}
+  style={{
+    marginVertical: 1,
+    borderRadius: 10,
+    marginRight: 1
+  }}
+/>
 
       <PieChart
         data={pieChartData}
@@ -337,7 +387,7 @@ function EncuestasScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     backgroundColor: "#f9f9f9",
   },
   filters: {

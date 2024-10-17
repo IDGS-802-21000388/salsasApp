@@ -37,7 +37,7 @@ function DrawerNavigator() {
         options={{
           title: "Encuestas",
           drawerIcon: ({ color }) => (
-            <Ionicons name="md-poll" size={24} color={color} />
+            <Ionicons name="list-box" size={24} color={color} />
           ),
         }}
       />

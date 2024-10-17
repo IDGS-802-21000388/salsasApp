@@ -1,7 +1,8 @@
 import { createAgenteVenta } from './AgentesVentaService';
-import { API_BASE_URL } from '@env';
+//import { API_BASE_URL } from '../env';
 
-const BASE_URL = `${API_BASE_URL}/Usuarios`;
+//const BASE_URL = `${API_BASE_URL}/Usuarios`;
+const BASE_URL = `http://192.168.1.10:7215/api/Usuarios`;
 
 export const createUser = async (userData) => {
   try {
