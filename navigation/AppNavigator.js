@@ -4,6 +4,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import LoginScreen from '../views/LoginScreen';
 import HomeScreen from '../views/HomeScreen';
 import UserScreen from '../views/UserScreen';
+import TypePromoScreen from '../views/TypePromoScreen';
 import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
@@ -35,6 +36,16 @@ function DrawerNavigator() {
         component={UserScreen} 
         options={{
           title: 'Registrar Usuario',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="person-add-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="TypePromoScreen" 
+        component={TypePromoScreen} 
+        options={{
+          title: 'Promociones por Tipo',
           drawerIcon: ({ color }) => (
             <Ionicons name="person-add-outline" size={24} color={color} />
           ),
