@@ -1,7 +1,11 @@
 # Changelog
 
 ## Ramírez Tovar José Ángel
-## v2.0.0 - 2024-10-21
+## v2.1.0 - 2024-10-23
+
+### Agregado
+- Se terminó el modulo de promociones por tipo de usuario.
+
 
 ### Agregado
 - Se agregó modulo para el envio de promociones por el tipo de usuario.

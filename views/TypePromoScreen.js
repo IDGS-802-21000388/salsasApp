@@ -3,6 +3,7 @@ import { Box, Text, Center, ScrollView, VStack, TextArea, Button } from 'native-
 import RNPickerSelect from 'react-native-picker-select';
 import { getUsers } from '../services/UserService';
 import { TouchableOpacity } from 'react-native';
+import TypePromoService from '../services/TypePromoService'; 
 
 const TypePromoScreen = () => {
   const [users, setUsers] = useState([]);
@@ -50,7 +51,7 @@ const TypePromoScreen = () => {
     setSelectedEmails([]);
   };
 
-  const handleSendEmail = () => {
+  const handleSendEmail = async () => {
     if (selectedEmails.length === 0) {
       setErrorMessage('Debe seleccionar al menos un correo.');
       return;
@@ -62,8 +63,18 @@ const TypePromoScreen = () => {
     }
 
     setErrorMessage('');
-    console.log('Selected Emails:', selectedEmails);
-    console.log('Email Content:', emailContent);
+
+    try {
+      const response = await TypePromoService.sendPromotionEmail(selectedEmails, emailContent);
+
+      if (response.status === 200) {
+        setErrorMessage('Correo enviado exitosamente.');
+      } else {
+        setErrorMessage('Hubo un problema al enviar el correo.');
+      }
+    } catch (error) {
+      setErrorMessage('Error al enviar el correo: ' + error.message);
+    }
   };
 
   return (
