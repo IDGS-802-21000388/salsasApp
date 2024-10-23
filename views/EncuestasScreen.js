@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   StyleSheet,
   Alert,
-  Linking,
   ScrollView,
 } from "react-native";
 import { BarChart, PieChart } from "react-native-chart-kit";
@@ -26,7 +25,6 @@ function EncuestasScreen() {
   const [filteredEncuestas, setFilteredEncuestas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all");
   const [isModalVisible, setModalVisible] = useState(false);
   const [isDetailModalVisible, setDetailModalVisible] = useState(false);
   const [topClients, setTopClients] = useState([]);
@@ -112,59 +110,79 @@ function EncuestasScreen() {
     }
   };
 
-  const sendEmail = async (email) => {
+  const handleSendEmail = async (email) => {
     if (!selectedVenta || products.length === 0) {
-      console.error("No hay detalles de venta o productos disponibles para enviar.");
+      console.error("No hay datos disponibles para la compra.");
       return;
     }
-  
-    const subject = "Detalles de tu compra y encuesta de satisfacción";
-    let body = "<p>Gracias por tu compra. Aquí tienes los detalles de tu venta:</p>";
-  
-    body += `<p><strong>Cantidad:</strong> ${selectedVenta.cantidad}</p>`;
-    body += `<p><strong>Total:</strong> ${selectedVenta.subtotal}</p>`;
-    
-    body += "<p><strong>Productos:</strong></p><ul>";
-    products.forEach((product) => {
-      body += `<li>${product.nombreProducto}`;
-      if (product.fotografia) {
-        body += `<br/><img src="${product.fotografia}" width="100"/>`;
-      } else {
-        body += "<br/>No hay imagen disponible.";
-      }
-      body += `</li>`;
-    });
-    body += "</ul>";
-  
-    body += "<p>Puedes visitar nuestra página en el siguiente enlace:</p>";
-    body += '<p><a href="https://www.tupagina.com">Visitar nuestra página</a></p>';
-  
+
+    if (!encuestas || encuestas.length === 0) {
+      console.error("No hay encuestas disponibles.");
+      return;
+    }
+
+    const ultimaEncuesta = encuestas[encuestas.length - 1];
+
+    const compra = {
+      cantidad: selectedVenta.cantidad,
+      total: selectedVenta.subtotal,
+      productos: products.map(product => ({
+        nombreProducto: product.nombreProducto,
+        fotografia: product.fotografia
+      }))
+    };
+
+    await sendEmail(email, compra, ultimaEncuesta);
+  };
+
+  const sendEmail = async (email, compra, encuesta) => {
+    if (!email) {
+      Alert.alert("Error", "No se proporcionó un correo electrónico.");
+      return;
+    }
+
+    if (!compra || !compra.cantidad || !compra.total || !compra.productos) {
+      Alert.alert("Error", "Información de la compra incompleta.");
+      return;
+    }
+
+    if (!encuesta || !encuesta.procesoCompra || !encuesta.saborProducto || !encuesta.entregaProducto
+      || !encuesta.presentacionProducto || !encuesta.facilidadUsoPagina) {
+      Alert.alert("Error", "Información de la encuesta incompleta.");
+      return;
+    }
+
+    const templateParams = {
+      email,
+      cantidad: compra.cantidad,
+      total: compra.total,
+      productos: compra.productos,
+      procesoCompra: encuesta.procesoCompra,
+      saborProducto: encuesta.saborProducto,
+      entregaProducto: encuesta.entregaProducto,
+      presentacionProducto: encuesta.presentacionProducto,
+      facilidadUsoPagina: encuesta.facilidadUsoPagina,
+    };
+
     try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
+      const response = await fetch("http://10.16.15.98:3000/send-email", {
+        method: "POST",
         headers: {
-          'Authorization': 're_hweJYdWb_FSohTFiABsi6aw8HdXcL8Rye', // Reemplaza con tu token real
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          from: "Acme <onboarding@resend.dev>",
-          to: [email],
-          subject: subject,
-          html: body
-        })
+        body: JSON.stringify(templateParams),
       });
-  
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Correo enviado exitosamente:", result);
-      } else {
-        console.log("Error al enviar el correo:", response.status, await response.text());
+
+      if (!response.ok) {
+        throw new Error("Error al enviar el correo");
       }
+
+      Alert.alert("Correo enviado", "El correo se ha enviado correctamente.");
     } catch (error) {
-      console.error("Error en la petición:", error);
+      Alert.alert("Error", "Hubo un problema al enviar el correo.");
     }
   };
-  
+
 
   const chartData = {
     labels: ["Proceso", "Sabor", "Entrega", "Pres", "Faci"],
@@ -177,10 +195,11 @@ function EncuestasScreen() {
           filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.presentacionProducto, 0),
           filteredEncuestas.reduce((acc, encuesta) => acc + encuesta.facilidadUsoPagina, 0),
         ],
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`      },
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`
+      },
     ],
   };
-  
+
 
   const classifySatisfaction = (encuesta) => {
     const ratings = [
@@ -261,32 +280,32 @@ function EncuestasScreen() {
       </View>
 
       <BarChart
-  data={chartData}
-  width={screenWidth - 20}
-  height={230}
-  fromZero={true} // Asegura que el eje Y empiece en 0
-  chartConfig={{
-    backgroundColor: "#ffffff",
-    backgroundGradientFrom: "#980900",
-    backgroundGradientTo: "#980900",
-    decimalPlaces: 0,
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Color de las barras
-    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`, // Color de las etiquetas
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "1",
-      stroke: "#ffa726",
-    },
-  }}
-  style={{
-    marginVertical: 1,
-    borderRadius: 10,
-    marginRight: 1
-  }}
-/>
+        data={chartData}
+        width={screenWidth - 20}
+        height={230}
+        fromZero={true}
+        chartConfig={{
+          backgroundColor: "#ffffff",
+          backgroundGradientFrom: "#980900",
+          backgroundGradientTo: "#980900",
+          decimalPlaces: 0,
+          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+          propsForDots: {
+            r: "6",
+            strokeWidth: "1",
+            stroke: "#ffa726",
+          },
+        }}
+        style={{
+          marginVertical: 1,
+          borderRadius: 10,
+          marginRight: 1
+        }}
+      />
 
       <PieChart
         data={pieChartData}
@@ -323,7 +342,7 @@ function EncuestasScreen() {
                 <Text>Correo: {usuario?.correo || "No encontrado"}</Text>
                 <Text>Rol: {usuario?.rol || "No encontrado"}</Text>
                 <TouchableOpacity
-                  onPress={() => sendEmail(usuario?.correo)}
+                  onPress={() => handleSendEmail(usuario?.correo)}
                   style={styles.emailButton}
                 >
                   <Text style={styles.emailText}>📧 Enviar Email</Text>

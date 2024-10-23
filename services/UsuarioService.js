@@ -2,7 +2,8 @@ import axios from 'axios';
 //import { API_BASE_URL } from '../env';
 
 //const API_URL_USERS = `${API_BASE_URL}/Usuarios`;
-const API_URL_USERS = `http://192.168.1.10:7215/api/Usuarios`;
+const API_URL_USERS = `http://10.16.15.98:7215/api/Usuarios`;
+//const API_URL_USERS = `http://192.168.1.10:7215/api/Usuarios`;
 
 export const getUsers = async () => {
   try {

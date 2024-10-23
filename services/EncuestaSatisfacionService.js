@@ -2,7 +2,8 @@ import axios from 'axios';
 //import { API_BASE_URL } from '../env';
 
 //const API_URL_ENCUESTA = `${API_BASE_URL}/EncuestaSatisfaccion`;
-const API_URL_ENCUESTA = `http://192.168.1.10:7215/api/EncuestaSatisfaccion`;
+const API_URL_ENCUESTA = `http://10.16.15.98:7215/api/EncuestaSatisfaccion`;
+//const API_URL_ENCUESTA = `http://192.168.1.10:7215/api/EncuestaSatisfaccion`;
 
 export const getEncuestas = async () => {
   try {
