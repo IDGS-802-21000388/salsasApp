@@ -5,6 +5,7 @@ import LoginScreen from '../views/LoginScreen';
 import HomeScreen from '../views/HomeScreen';
 import UserScreen from '../views/UserScreen';
 import TypePromoScreen from '../views/TypePromoScreen';
+import ProductScreen from '../views/ProductScreen';
 import { Ionicons } from '@expo/vector-icons';
 
 const Stack = createNativeStackNavigator();
@@ -38,6 +39,16 @@ function DrawerNavigator() {
           title: 'Registrar Usuario',
           drawerIcon: ({ color }) => (
             <Ionicons name="person-add-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="products" 
+        component={ProductScreen} 
+        options={{
+          title: 'Cotización de Productos',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="cart-outline" size={24} color={color} />
           ),
         }}
       />
