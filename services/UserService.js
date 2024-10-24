@@ -32,3 +32,24 @@ export const createUser = async (userData) => {
     throw error;
   }
 };
+
+export const getUsers = async () => {
+  try {
+    const response = await fetch(BASE_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Error obteniendo los usuarios');
+    }
+
+    const users = await response.json();
+    return users;
+  } catch (error) {
+    console.error('Error obteniendo los usuarios:', error);
+    throw error;
+  }
+};
