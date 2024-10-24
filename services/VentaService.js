@@ -1,8 +1,8 @@
 import axios from 'axios';
-//import { API_BASE_URL } from '../env';
+import { API_BASE_URL } from '@env';
 
-//const API_URL_SALES = `${API_BASE_URL}/Ventum`;
-const API_URL_SALES = `http://10.16.15.98:7215/api/Ventum`;
+const API_URL_SALES = `${API_BASE_URL}/Ventum`;
+//const API_URL_SALES = `http://10.16.15.98:7215/api/Ventum`;
 //const API_URL_SALES = `http://192.168.1.10:7215/api/Ventum`;
 
 export const getSales = async () => {
