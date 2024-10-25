@@ -9,6 +9,7 @@ import TypePromoScreen from '../views/TypePromoScreen';
 import ProductScreen from '../views/ProductScreen';
 import { Ionicons } from '@expo/vector-icons';
 import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
+import ComparacionScreen from '../views/ComparacionScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -82,6 +83,16 @@ function DrawerNavigator() {
           title: 'Historial de Renipoints',
           drawerIcon: ({ color }) => (
             <Ionicons name="bag" size={24} color={color} />
+          ),
+        }}
+      />
+       <Drawer.Screen 
+        name="Comparacion" 
+        component={ComparacionScreen} 
+        options={{
+          title: 'Informe de Ventas', 
+          drawerIcon: ({ color }) => (
+            <Ionicons name="bar-chart-outline" size={24} color={color} />
           ),
         }}
       />
