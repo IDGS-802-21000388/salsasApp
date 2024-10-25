@@ -16,6 +16,8 @@ import { getUsers } from "../services/UsuarioService";
 import { getEncuestas } from "../services/EncuestaSatisfacionService";
 import { getSaleDetailById } from "../services/DetalleVentaService";
 import { getProducts } from "../services/ProductService";
+import { API_SERVICE_EMAIL } from '@env';
+
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -164,8 +166,10 @@ function EncuestasScreen() {
       facilidadUsoPagina: encuesta.facilidadUsoPagina,
     };
 
+    console.log("API_BASE_EMAIL", API_SERVICE_EMAIL);
+
     try {
-      const response = await fetch("http://10.16.15.98:3000/send-email", {
+      const response = await fetch(`${API_SERVICE_EMAIL}/send-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

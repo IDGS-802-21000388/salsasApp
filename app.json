@@ -2,14 +2,14 @@
   "expo": {
     "name": "salsas-reni",
     "slug": "salsas-reni",
-    "version": "1.0.0",
+    "version": "1.6.8",
     "orientation": "portrait",
     "icon": "./assets/logo_Salsa_Reni-removebg.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/logo_Salsa_Reni-removebg.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#980a00"
     },
     "ios": {
       "supportsTablet": true
@@ -17,7 +17,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo_Salsa_Reni-removebg.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#980a00"
       }
     },
     "web": {
