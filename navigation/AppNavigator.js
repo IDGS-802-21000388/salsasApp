@@ -10,6 +10,7 @@ import ProductScreen from '../views/ProductScreen';
 import { Ionicons } from '@expo/vector-icons';
 import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
+import ClientesScreen from '../views/ClientesScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -41,7 +42,7 @@ function DrawerNavigator() {
         options={{
           title: "Encuestas",
           drawerIcon: ({ color }) => (
-            <Ionicons name="list-box" size={24} color={color} />
+            <Ionicons name="stats-chart-outline" size={24} color={color} />
           ),
         }}
       />
@@ -96,6 +97,18 @@ function DrawerNavigator() {
           ),
         }}
       />
+
+    <Drawer.Screen 
+        name="ClientesScreen" 
+        component={ClientesScreen} 
+        options={{
+          title: 'Historial de Ventas',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="receipt-outline" size={24} color={color} />
+          ),
+        }}
+      />
+
     </Drawer.Navigator>
   );
 }
