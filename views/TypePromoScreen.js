@@ -12,6 +12,7 @@ const TypePromoScreen = () => {
   const [emailContent, setEmailContent] = useState('');
   const [selectedEmails, setSelectedEmails] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -63,12 +64,15 @@ const TypePromoScreen = () => {
     }
 
     setErrorMessage('');
+    setSuccessMessage('');
 
     try {
       const response = await TypePromoService.sendPromotionEmail(selectedEmails, emailContent);
 
       if (response.status === 200) {
-        setErrorMessage('Correo enviado exitosamente.');
+        setSuccessMessage('Correo enviado exitosamente.');
+        setSelectedEmails([]);
+        setEmailContent('');
       } else {
         setErrorMessage('Hubo un problema al enviar el correo.');
       }
@@ -146,6 +150,11 @@ const TypePromoScreen = () => {
         {errorMessage ? (
           <Text color="red.500" mb={4}>
             {errorMessage}
+          </Text>
+        ) : null}
+        {successMessage ? (
+          <Text color="green.500" mb={4}>
+            {successMessage}
           </Text>
         ) : null}
         <Button onPress={handleSendEmail} colorScheme="green" mb={4}>
