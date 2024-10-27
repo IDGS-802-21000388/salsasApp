@@ -327,9 +327,9 @@ function EncuestasScreen() {
         absolute
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleShowTopClients}>
-        <Text style={styles.buttonText}>Ver Clientes que más contestaron</Text>
-      </TouchableOpacity>
+      
+
+      
 
       <Modal isVisible={isModalVisible}>
         <View style={styles.modalContent}>
