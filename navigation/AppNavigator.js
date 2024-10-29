@@ -13,6 +13,7 @@ import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
 import AgentesVentaScreen from '../views/AgentesVentaScreen'; // Importa el componente de Agentes de Venta
 import ClientesScreen from '../views/ClientesScreen';
+import QuejasScreen from '../views/QuejasScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -127,6 +128,16 @@ function DrawerNavigator() {
           title: 'Registro de Contacto', 
           drawerIcon: ({ color }) => (
             <Ionicons name="contacts-outline" size={24} color={color} /> // New screen with appropriate icon
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Quejas" 
+        component={QuejasScreen} 
+        options={{
+          title: 'Quejas', 
+          drawerIcon: ({ color }) => (
+            <Ionicons name="bar-chart-outline" size={24} color={color} />
           ),
         }}
       />
