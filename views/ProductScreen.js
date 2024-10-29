@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
 import { FlatList, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { Box, Text, Button, VStack, HStack, Input, Center, IconButton, Icon, Modal, Fab } from 'native-base';
+import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import useProductViewModel from '../viewmodels/ProductViewModel';
+import { getProductReviews } from '../services/ProductService';
 
 export default function ProductScreen() {
   const { products, loading, error, cart, quantities, handleAddToCart, handleRemoveFromCart, handleQuantityChange, calculateSubtotal, calculateIVA } = useProductViewModel();
   const [showCart, setShowCart] = useState(false);
+  const [showTestimonios, setShowTestimonios] = useState(false);
+  const [testimonios, setTestimonios] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const fetchTestimonios = async (idProducto) => {
+    console.log('Fetching testimonials for product:', idProducto);
+    try {
+      const reviews = await getProductReviews(idProducto);
+      setTestimonios(reviews);
+      setShowTestimonios(true);
+      console.log('Testimonios:', reviews);
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+      console.log('Error fetching testimonials:', error);
+    }
+  };
 
   const renderProduct = ({ item }) => (
     <Box style={styles.productBox}>
@@ -16,6 +33,31 @@ export default function ProductScreen() {
       <Button style={styles.addButton} onPress={() => handleAddToCart(item)}>
         <Text style={styles.buttonText}>Agregar al carrito</Text>
       </Button>
+      <Button style={styles.testimonialButton} onPress={() => fetchTestimonios(item.idProducto)}>
+        <Text style={styles.buttonText}>Ver Testimonios</Text>
+      </Button>
+    </Box>
+  );
+
+  const renderCalificacion = (calificacion) => {
+    const estrellas = '⭐️'.repeat(calificacion);
+    let emoji;
+
+    if (calificacion === 5) emoji = '😃';
+    else if (calificacion === 4) emoji = '😊';
+    else if (calificacion === 3) emoji = '😐';
+    else if (calificacion === 2) emoji = '😕';
+    else emoji = '😞';
+
+    return `${estrellas} ${emoji}`;
+  };
+
+  const renderTestimonio = ({ item }) => (
+    <Box style={styles.testimonioBox}>
+      <Text style={styles.testimonioComentario}>{item.comentario}</Text>
+      <Text style={styles.testimonioCalificacion}>
+        Calificación: {renderCalificacion(item.calificacion)}
+      </Text>
     </Box>
   );
 
@@ -33,12 +75,11 @@ export default function ProductScreen() {
               w="20%"
             />
             <Text style={styles.cartItemPrice}>${item.precioVenta * item.quantity}</Text>
-            {/* Botón para eliminar el producto */}
             <IconButton
               icon={<Icon as={Ionicons} name="close-circle-outline" />}
               onPress={() => handleRemoveFromCart(item.idProducto)}
               size="lg"
-              _icon={{ color: "red.500" }} 
+              _icon={{ color: "red.500" }}
             />
           </HStack>
         </Box>
@@ -71,7 +112,6 @@ export default function ProductScreen() {
               contentContainerStyle={styles.productList}
             />
 
-            {/* FAB para mostrar el carrito */}
             <Fab
               position="absolute"
               bottom={70}
@@ -80,10 +120,9 @@ export default function ProductScreen() {
               icon={<Icon color="white" as={Ionicons} name="cart-outline" size="lg" />}
               onPress={() => setShowCart(true)}
               backgroundColor="#217765"
-              shadow={2} // Añadimos una pequeña sombra para darle más relevancia
+              shadow={2}
             />
 
-            {/* Modal del carrito */}
             <Modal isOpen={showCart} onClose={() => setShowCart(false)} size="lg">
               <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />
@@ -91,6 +130,25 @@ export default function ProductScreen() {
                 <Modal.Body>{renderCartItems()}</Modal.Body>
                 <Modal.Footer>
                   <Button w="100%" onPress={() => setShowCart(false)} backgroundColor="#217765">
+                    <Text style={styles.buttonText}>Cerrar</Text>
+                  </Button>
+                </Modal.Footer>
+              </Modal.Content>
+            </Modal>
+
+            <Modal isOpen={showTestimonios} onClose={() => setShowTestimonios(false)} size="lg">
+              <Modal.Content maxWidth="400px">
+                <Modal.CloseButton />
+                <Modal.Header>Testimonios</Modal.Header>
+                <Modal.Body>
+                  <FlatList
+                    data={testimonios}
+                    renderItem={renderTestimonio}
+                    keyExtractor={(item) => item.idTestimonio.toString()}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button w="100%" onPress={() => setShowTestimonios(false)} backgroundColor="#217765">
                     <Text style={styles.buttonText}>Cerrar</Text>
                   </Button>
                 </Modal.Footer>
@@ -104,25 +162,25 @@ export default function ProductScreen() {
 }
 
 const styles = StyleSheet.create({
-  productList: {
+  productList: { 
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingBottom: 20 ,
   },
   productBox: {
     backgroundColor: '#fff',
-    padding: 20, // Espaciado más amplio para mayor estética
-    borderRadius: 12, // Esquinas más redondeadas
+    padding: 20,
+    borderRadius: 12,
     marginVertical: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 4,  // Sombra más sutil para Android
+    elevation: 4,
   },
   productImage: {
     width: '100%',
     height: 150,
-    borderRadius: 12,
+    borderRadius: 12,  
   },
   productName: {
     fontSize: 18,
@@ -183,5 +241,33 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'right',
     color: '#217765',
+  },
+  testimonioBox: { 
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  testimonioComentario: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+  },
+  testimonioCalificacion: {
+    fontSize: 14,
+    color: '#555',
+  },
+  testimonialButton: {
+    marginTop: 10,
+    backgroundColor: '#217765',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    alignSelf: 'center',
   },
 });

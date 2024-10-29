@@ -7,10 +7,12 @@ import UserScreen from '../views/UserScreen';
 import EncuestasScreen from "../views/EncuestasScreen";
 import TypePromoScreen from '../views/TypePromoScreen';
 import ProductScreen from '../views/ProductScreen';
+import ContactRegistrationScreen from '../views/ContactRegistrationScreen'; // Import the new screen
 import { Ionicons } from '@expo/vector-icons';
 import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
 import AgentesVentaScreen from '../views/AgentesVentaScreen'; // Importa el componente de Agentes de Venta
+import ClientesScreen from '../views/ClientesScreen';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -42,7 +44,7 @@ function DrawerNavigator() {
         options={{
           title: "Encuestas",
           drawerIcon: ({ color }) => (
-            <Ionicons name="list-box" size={24} color={color} />
+            <Ionicons name="stats-chart-outline" size={24} color={color} />
           ),
         }}
       />
@@ -72,7 +74,7 @@ function DrawerNavigator() {
         options={{
           title: 'Promociones por Tipo',
           drawerIcon: ({ color }) => (
-            <Ionicons name="pricetag-outline" size={24} color={color} />
+            <Ionicons name="megaphone-outline" size={24} color={color} /> // Updated icon
           ),
         }}
       />
@@ -106,6 +108,28 @@ function DrawerNavigator() {
           ),
         }}
       />
+
+    <Drawer.Screen 
+        name="ClientesScreen" 
+        component={ClientesScreen} 
+        options={{
+          title: 'Historial de Ventas',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="receipt-outline" size={24} color={color} />
+          ),
+        }}
+      />
+
+      <Drawer.Screen 
+        name="ContactRegistration" 
+        component={ContactRegistrationScreen} 
+        options={{
+          title: 'Registro de Contacto', 
+          drawerIcon: ({ color }) => (
+            <Ionicons name="contacts-outline" size={24} color={color} /> // New screen with appropriate icon
+          ),
+        }}
+      />
     </Drawer.Navigator>
   );
 }
@@ -118,7 +142,6 @@ export default function AppNavigator() {
         component={LoginScreen}
         options={{ headerShown: false }}
       />
-
       <Stack.Screen
         name="AppDrawer"
         component={DrawerNavigator}

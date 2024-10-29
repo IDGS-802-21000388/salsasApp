@@ -14,3 +14,18 @@ export const getProducts = async () => {
     throw new Error('Error fetching products');
   }
 };
+
+export const getProductReviews = async (idProducto) => {
+  try {
+    const response = await fetch(`${API_BASE_PRUEBA}/Testimonios/producto/${idProducto}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching reviews: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching reviews:', error);
+    throw error;
+  }
+};
