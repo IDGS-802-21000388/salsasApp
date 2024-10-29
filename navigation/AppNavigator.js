@@ -10,6 +10,7 @@ import ProductScreen from '../views/ProductScreen';
 import { Ionicons } from '@expo/vector-icons';
 import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
+import AgentesVentaScreen from '../views/AgentesVentaScreen'; // Importa el componente de Agentes de Venta
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -45,7 +46,6 @@ function DrawerNavigator() {
           ),
         }}
       />
-
       <Drawer.Screen
         name="CreateUser"
         component={UserScreen}
@@ -72,7 +72,7 @@ function DrawerNavigator() {
         options={{
           title: 'Promociones por Tipo',
           drawerIcon: ({ color }) => (
-            <Ionicons name="person-add-outline" size={24} color={color} />
+            <Ionicons name="pricetag-outline" size={24} color={color} />
           ),
         }}
       />
@@ -86,13 +86,23 @@ function DrawerNavigator() {
           ),
         }}
       />
-       <Drawer.Screen 
+      <Drawer.Screen 
         name="Comparacion" 
         component={ComparacionScreen} 
         options={{
           title: 'Informe de Ventas', 
           drawerIcon: ({ color }) => (
             <Ionicons name="bar-chart-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="AgentesVenta" 
+        component={AgentesVentaScreen} 
+        options={{
+          title: 'Agentes de Venta',
+          drawerIcon: ({ color }) => (
+            <Ionicons name="people-outline" size={24} color={color} />
           ),
         }}
       />
