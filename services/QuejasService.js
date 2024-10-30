@@ -1,12 +1,13 @@
 // services/QuejasService.js
 import axios from 'axios';
+import { API_BASE_PRUEBA } from '@env';
 
-const API_BASE_URL = 'http://10.16.14.112:7215/api';
+const API_URL = `${API_BASE_PRUEBA}`;
 
 export const QuejasService = {
   obtenerQuejas: async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/Quejas`);
+      const response = await axios.get(`${API_URL}/Quejas`);
       return response.data;
     } catch (error) {
       throw new Error('Error al obtener las quejas');
@@ -18,7 +19,7 @@ export const QuejasService = {
       console.log("Attempting to respond to complaint with ID:", id);
       console.log("Response message:", respuesta);
       const response = await axios.post(
-        `${API_BASE_URL}/Quejas/${id}/respuesta`,
+        `${API_URL}/Quejas/${id}/respuesta`,
         respuesta, // Asegúrate de que `respuesta` sea un string puro aquí
         {
           headers: {

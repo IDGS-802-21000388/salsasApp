@@ -137,7 +137,7 @@ function DrawerNavigator() {
         options={{
           title: 'Quejas', 
           drawerIcon: ({ color }) => (
-            <Ionicons name="bar-chart-outline" size={24} color={color} />
+            <Ionicons name="alert-circle-outline" size={24} color={color} />
           ),
         }}
       />
