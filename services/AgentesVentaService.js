@@ -7,7 +7,9 @@ const API_URL = `${API_BASE_PRUEBA}/AgentesVenta`;
 // Servicio para crear un nuevo AgenteVenta
 export const createAgenteVenta = async (idCliente) => {
   try {
-    const idAgente = 10; // Valor predeterminado para idAgente
+    const UserData = await AsyncStorage.getItem('user');
+    const parsedData = JSON.parse(UserData);
+    const user = parsedData.user;
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -15,8 +17,8 @@ export const createAgenteVenta = async (idCliente) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        idAgente,
-        idCliente,
+        idUsuario: user.idUsuario,
+        idCliente: idCliente,
       }),
     });
 
@@ -74,14 +76,13 @@ export const deleteAgenteVenta = async (idAgentesVenta) => {
       throw new Error('Error eliminando AgenteVenta');
     }
 
-    return true; // Devuelve true si la eliminación fue exitosa
+    return true;
   } catch (error) {
     console.error('Error eliminando AgenteVenta:', error);
     throw error;
   }
 };
 
-// Servicio para actualizar un AgenteVenta
 export const updateAgenteVenta = async (idAgentesVenta, idAgente, idCliente) => {
   try {
     const response = await fetch(`${API_URL}/${idAgentesVenta}`, {
