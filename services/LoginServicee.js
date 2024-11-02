@@ -3,7 +3,8 @@ import { API_BASE_PRUEBA } from '@env';
 
 console.log('API_BASE_URL', API_BASE_PRUEBA);
 
-const API_URL = `${API_BASE_PRUEBA}/Login/login`;
+const API_URL = `http://10.0.2.2:5042/api/Login/login`;
+
 console.log('API_URL', API_URL);
 //const API_URL = `http://10.16.15.98:7215/api/Login/login`;
 //const API_URL = `http://192.168.1.6:7215/api/Login/login`;
