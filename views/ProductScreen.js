@@ -63,7 +63,10 @@ export default function ProductScreen() {
 
   const handleSendCotizacion = async () => {
     try {
-      const response = await fetch(`${API_URL}:7215/api/cotizacion/enviar-cotizacion`, {
+      console.log('Enviando cotización...');
+      console.log('Email:', email);
+      console.log('Items:', cart);
+      const response = await fetch(`${API_BASE_PRUEBA}/cotizacion/enviar-cotizacion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

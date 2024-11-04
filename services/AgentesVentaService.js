@@ -1,4 +1,5 @@
 import { API_BASE_PRUEBA } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = `${API_BASE_PRUEBA}/AgentesVenta`;
 //const API_URL = `http://10.16.15.98:7215/api/AgentesVenta`;
@@ -10,6 +11,8 @@ export const createAgenteVenta = async (idCliente) => {
     const UserData = await AsyncStorage.getItem('user');
     const parsedData = JSON.parse(UserData);
     const user = parsedData.user;
+    const idAgente = user.idUsuario;
+    console.log('user ID STORAGE',idAgente);
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -17,8 +20,9 @@ export const createAgenteVenta = async (idCliente) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        idUsuario: user.idUsuario,
-        idCliente: idCliente,
+        idAgentesVenta: 0,
+        idAgente,
+        idCliente,
       }),
     });
 
