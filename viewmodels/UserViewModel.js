@@ -22,7 +22,7 @@ const isValidPostalCode = (code) => {
 };
 
 const useUserViewModel = () => {
-    const toast = useToast();
+  const toast = useToast();
   const [nombre, setNombre] = useState('');
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [correo, setCorreo] = useState('');
@@ -39,6 +39,23 @@ const useUserViewModel = () => {
   const [numExt, setNumExt] = useState('');
   const [numInt, setNumInt] = useState('');
   const [referencia, setReferencia] = useState('');
+
+  const resetFields = () => {
+    setNombre('');
+    setNombreUsuario('');
+    setCorreo('');
+    setContrasenia('');
+    setTelefono('');
+    setRol('');
+    setEstado('');
+    setMunicipio('');
+    setCodigoPostal('');
+    setColonia('');
+    setCalle('');
+    setNumExt('');
+    setNumInt('');
+    setReferencia('');
+  };
 
   const handleCreateUser = async () => {
     const trimmedCorreo = correo.trim();
@@ -123,7 +140,11 @@ const useUserViewModel = () => {
       rol,
       estatus: 1,
       telefono: trimmedTelefono,
+      intentos: 0,
+      idUsuario: 0,
+      dateLastToken: new Date().toISOString(),
       direccion: {
+        idDireccion: 0,
         estado: trimmedEstado,
         municipio: trimmedMunicipio,
         codigoPostal: trimmedCodigoPostal,
@@ -133,8 +154,7 @@ const useUserViewModel = () => {
         numInt: trimmedNumInt,
         referencia: trimmedReferencia,
       },
-      intentos: 0,
-    };
+    };    
 
     try {
       await createUser(userData);
@@ -143,6 +163,7 @@ const useUserViewModel = () => {
         text1: 'Éxito',
         text2: 'Usuario creado exitosamente.',
       });
+      resetFields();
     } catch (e) {
       toast.show('No se pudo crear el usuario.', {
         type: 'danger',
