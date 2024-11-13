@@ -9,7 +9,6 @@ import TypePromoScreen from '../views/TypePromoScreen';
 import ProductScreen from '../views/ProductScreen';
 import ContactRegistrationScreen from '../views/ContactRegistrationScreen'; // Import the new screen
 import { Ionicons } from '@expo/vector-icons';
-import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
 import AgentesVentaScreen from '../views/AgentesVentaScreen'; // Importa el componente de Agentes de Venta
 import ClientesScreen from '../views/ClientesScreen';
@@ -80,16 +79,6 @@ function DrawerNavigator() {
         }}
       />
       <Drawer.Screen 
-        name="ReniPointsScreen" 
-        component={RenipointsHistoryScreen} 
-        options={{
-          title: 'Historial de Renipoints',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="bag" size={24} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen 
         name="Comparacion" 
         component={ComparacionScreen} 
         options={{
@@ -127,7 +116,7 @@ function DrawerNavigator() {
         options={{
           title: 'Registro de Contacto', 
           drawerIcon: ({ color }) => (
-            <Ionicons name="contacts-outline" size={24} color={color} /> // New screen with appropriate icon
+            <Ionicons name="person-circle-outline" size={24} color={color} />
           ),
         }}
       />

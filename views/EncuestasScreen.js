@@ -166,7 +166,6 @@ function EncuestasScreen() {
       facilidadUsoPagina: encuesta.facilidadUsoPagina,
     };
 
-    console.log("API_BASE_EMAIL", API_SERVICE_EMAIL);
 
     try {
       const response = await fetch(`${API_SERVICE_EMAIL}/send-email`, {

@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import useProductViewModel from '../viewmodels/ProductViewModel';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { API_BASE_PRUEBA } from '@env';
+import { getProductReviews } from '../services/ProductService';
 
 const API_URL = `${API_BASE_PRUEBA}/Ventum`;
 
@@ -63,9 +64,6 @@ export default function ProductScreen() {
 
   const handleSendCotizacion = async () => {
     try {
-      console.log('Enviando cotización...');
-      console.log('Email:', email);
-      console.log('Items:', cart);
       const response = await fetch(`${API_BASE_PRUEBA}/cotizacion/enviar-cotizacion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

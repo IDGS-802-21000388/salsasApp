@@ -26,6 +26,7 @@ function ClientesScreen() {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [products, setProducts] = useState([]);
   const [encuestas, setEncuestas] = useState([]);
+  const [detailsViewed, setDetailsViewed] = useState({});
 
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -54,7 +55,7 @@ function ClientesScreen() {
     setFilteredUsuarios(filteredUsuarios);
   };
 
-  const handleViewDetails = async (idVenta) => {
+  const handleViewDetails = async (idVenta, idUsuario) => {
     setLoadingDetails(true);
     try {
       const ventaDetails = await getSaleDetailById(idVenta);
@@ -64,6 +65,8 @@ function ClientesScreen() {
         (product) => ventaDetails.idProducto === product.idProducto
       );
       setProducts(purchasedProducts);
+      
+      setDetailsViewed((prev) => ({ ...prev, [idUsuario]: true }));
     } catch (error) {
       console.error("Error al cargar detalles de venta", error);
     } finally {
@@ -73,8 +76,6 @@ function ClientesScreen() {
   };
 
   const handleSendEmail = async (email, userId) => {
-    console.log("Enviar correo a:", email);
-    console.log("ID de usuario:", userId);
     
     if (!selectedVenta || products.length === 0) {
       console.error("No hay datos disponibles para la compra.");
@@ -83,12 +84,8 @@ function ClientesScreen() {
   
     try {
       const encuestasData = await getEncuestasByUserId(userId);
-      setEncuestas(encuestasData);
-      console.log("Encuestas obtenidas:", encuestasData);
-  
-      const lastEncuesta = getLastEncuesta(encuestasData);
-      console.log("Última encuesta:", lastEncuesta);
-      
+      setEncuestas(encuestasData);  
+      const lastEncuesta = getLastEncuesta(encuestasData);      
       const compra = {
         cantidad: selectedVenta.cantidad,
         total: selectedVenta.subtotal,
@@ -138,8 +135,6 @@ function ClientesScreen() {
       facilidadUsoPagina: compra.encuesta.facilidadUsoPagina,
     };
 
-    console.log("API_BASE_EMAIL", API_SERVICE_EMAIL);
-
     try {
       const response = await fetch(`${API_SERVICE_EMAIL}/send-email`, {
         method: "POST",
@@ -175,14 +170,16 @@ function ClientesScreen() {
           <Text style={styles.clientName}>Nombre: {usuario?.nombre || "No encontrado"}</Text>
           <Text>Correo: {usuario?.correo || "No encontrado"}</Text>
           <Text>Rol: {usuario?.rol || "No encontrado"}</Text>
+          {detailsViewed[usuario.idUsuario] && (
+            <TouchableOpacity
+              onPress={() => handleSendEmail(usuario?.correo, usuario.idUsuario)}
+              style={styles.emailButton}
+            >
+              <Text style={styles.emailText}>📧 Enviar Email</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity
-            onPress={() => handleSendEmail(usuario?.correo, usuario.idUsuario)}
-            style={styles.emailButton}
-          >
-            <Text style={styles.emailText}>📧 Enviar Email</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => handleViewDetails(usuario.idUsuario)}
+            onPress={() => handleViewDetails(usuario.idUsuario, usuario.idUsuario)}
             style={styles.detailButton}
           >
             <Text style={styles.detailText}>👁️ Ver Detalles</Text>
@@ -251,28 +248,40 @@ const styles = StyleSheet.create({
   },
   clientCard: {
     backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    elevation: 2,
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 3,
+  },
+  clientName: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
   emailButton: {
     backgroundColor: "#4CAF50",
     padding: 10,
     borderRadius: 5,
-    marginTop: 5,
+    alignItems: "center",
+    marginVertical: 5,
   },
   emailText: {
     color: "#fff",
+    fontWeight: "bold",
   },
   detailButton: {
     backgroundColor: "#2196F3",
     padding: 10,
     borderRadius: 5,
+    alignItems: "center",
     marginTop: 5,
   },
   detailText: {
     color: "#fff",
+    fontWeight: "bold",
   },
   modalContent: {
     backgroundColor: "#fff",
@@ -280,20 +289,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  closeModal: {
-    color: "red",
-    marginTop: 10,
-    fontWeight: "bold",
   },
   productImage: {
     width: 100,
     height: 100,
-    borderRadius: 5,
-    marginTop: 5,
+    marginVertical: 10,
+  },
+  closeModal: {
+    color: "red",
+    fontWeight: "bold",
+    textAlign: "center",
+    marginTop: 10,
   },
 });
 
