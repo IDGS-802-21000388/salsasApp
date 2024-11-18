@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useCallback } from 'react';
 import { FlatList, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input, Select } from 'native-base';
@@ -64,19 +65,30 @@ export default function ProductScreen() {
 
   const handleSendCotizacion = async () => {
     try {
+      const user = await AsyncStorage.getItem('user');
+      console.log('usuario storage', user);
+      const parsedUser = JSON.parse(user);
+      const { idUsuario } = parsedUser.user;
+  
+      const cotizacionData = {
+        email,
+        idUsuario,
+        items: cart.map(item => ({
+          NombreProducto: item.nombreProducto,
+          PrecioUnitario: item.precioVenta,
+          Cantidad: item.quantity,
+        })),
+        totalConDescuento: calculateDiscountedTotal(),
+      };
+  
+      console.log('Datos enviados a la API:', cotizacionData);
+  
       const response = await fetch(`${API_BASE_PRUEBA}/cotizacion/enviar-cotizacion`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          items: cart.map(item => ({
-            NombreProducto: item.nombreProducto,
-            PrecioUnitario: item.precioVenta,
-            Cantidad: item.quantity,
-          })),
-        }),
+        body: JSON.stringify(cotizacionData),
       });
-
+  
       if (response.ok) {
         alert('Cotización enviada correctamente');
       } else {
