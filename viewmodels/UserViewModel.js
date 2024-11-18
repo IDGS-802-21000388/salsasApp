@@ -3,8 +3,15 @@ import { createUser } from '../services/UserService';
 import { useToast } from 'react-native-toast-notifications';
 
 const isValidEmail = (email) => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
+  const [localPart, domainPart] = email.split('@');
+
+  if (!localPart || !domainPart) return false;
+
+  const localPartRegex = /^[a-zA-Z0-9._%+-]+$/;
+  if (!localPartRegex.test(localPart)) return false;
+
+  const domainPartRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return domainPartRegex.test(domainPart);
 };
 
 const isValidPassword = (password) => {
@@ -17,8 +24,11 @@ const isValidPhoneNumber = (phone) => {
   return phoneRegex.test(phone);
 };
 
-const isValidPostalCode = (code) => {
-  return /^[0-9]{5}$/.test(code);
+const isValidPostalCode = (code) => /^[0-9]{5}$/.test(code);
+
+const hasInvalidCharacters = (text) => {
+  const invalidCharRegex = /[^a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ .,/-]/;
+  return invalidCharRegex.test(text);
 };
 
 const useUserViewModel = () => {
@@ -58,32 +68,49 @@ const useUserViewModel = () => {
   };
 
   const handleCreateUser = async () => {
-    const trimmedCorreo = correo.trim();
-    const trimmedContrasenia = contrasenia.trim();
-    const trimmedNombre = nombre.trim();
-    const trimmedNombreUsuario = nombreUsuario.trim();
-    const trimmedTelefono = telefono.trim();
-    const trimmedEstado = estado.trim();
-    const trimmedMunicipio = municipio.trim();
-    const trimmedCodigoPostal = codigoPostal.trim();
-    const trimmedColonia = colonia.trim();
-    const trimmedCalle = calle.trim();
-    const trimmedNumExt = numExt.trim();
-    const trimmedNumInt = numInt.trim();
-    const trimmedReferencia = referencia.trim();
+    const cleanedCorreo = correo.trim();
+    const cleanedContrasenia = contrasenia.trim();
+    const cleanedTelefono = telefono.trim();
+    const cleanedEstado = estado.trim();
+    const cleanedMunicipio = municipio.trim();
+    const cleanedCodigoPostal = codigoPostal.trim();
+    const cleanedNumExt = numExt.trim();
+    const cleanedNumInt = numInt.trim();
+    const cleanedCalle = calle.trim();
+    const cleanedColonia = colonia.trim();
+    const cleanedReferencia = referencia.trim();
+
+    const fieldsToValidate = [
+      { name: 'Nombre', value: cleanedNombre },
+      { name: 'Nombre de Usuario', value: cleanedNombreUsuario },
+      { name: 'Colonia', value: cleanedColonia },
+      { name: 'Calle', value: cleanedCalle },
+      { name: 'Referencia', value: cleanedReferencia },
+    ];
+
+    for (const field of fieldsToValidate) {
+      if (hasInvalidCharacters(field.value)) {
+        toast.show(`El campo "${field.name}" contiene caracteres no permitidos.`, {
+          type: 'danger',
+          text1: 'Validación de Seguridad',
+          text2: `Por favor, elimina caracteres no válidos como #, comillas o símbolos no permitidos en "${field.name}".`,
+        });
+        return;
+      }
+    }
 
     if (
-      !trimmedNombre ||
-      !trimmedNombreUsuario ||
-      !trimmedCorreo ||
-      !trimmedContrasenia ||
-      !trimmedTelefono ||
-      !trimmedEstado ||
-      !trimmedMunicipio ||
-      !trimmedCodigoPostal ||
-      !trimmedColonia ||
-      !trimmedCalle ||
-      !trimmedNumExt ||
+      !cleanedNombre ||
+      !cleanedNombreUsuario ||
+      !cleanedCorreo ||
+      !cleanedContrasenia ||
+      !cleanedTelefono ||
+      !cleanedEstado ||
+      !cleanedMunicipio ||
+      !cleanedCodigoPostal ||
+      !cleanedColonia ||
+      !cleanedCalle ||
+      !cleanedNumExt ||
       !rol
     ) {
       toast.show('Por favor, completa todos los campos requeridos.', {
@@ -94,16 +121,16 @@ const useUserViewModel = () => {
       return;
     }
 
-    if (!isValidEmail(trimmedCorreo)) {
+    if (!isValidEmail(cleanedCorreo)) {
       toast.show('Correo inválido.', {
         type: 'danger',
         text1: 'Error de Validación',
-        text2: 'Por favor, ingresa un correo electrónico válido.',
+        text2: 'El correo no debe contener acentos en la parte antes del @ y debe ser un formato válido.',
       });
       return;
     }
 
-    if (!isValidPassword(trimmedContrasenia)) {
+    if (!isValidPassword(cleanedContrasenia)) {
       toast.show('Contraseña insegura.', {
         type: 'danger',
         text1: 'Error de Validación',
@@ -112,7 +139,7 @@ const useUserViewModel = () => {
       return;
     }
 
-    if (!isValidPhoneNumber(trimmedTelefono)) {
+    if (!isValidPhoneNumber(cleanedTelefono)) {
       toast.show('Teléfono inválido.', {
         type: 'danger',
         text1: 'Error de Validación',
@@ -121,7 +148,7 @@ const useUserViewModel = () => {
       return;
     }
 
-    if (!isValidPostalCode(trimmedCodigoPostal)) {
+    if (!isValidPostalCode(cleanedCodigoPostal)) {
       toast.show('Código postal inválido.', {
         type: 'danger',
         text1: 'Error de Validación',
@@ -133,28 +160,28 @@ const useUserViewModel = () => {
     setIsLoading(true);
 
     const userData = {
-      nombre: trimmedNombre,
-      nombreUsuario: trimmedNombreUsuario,
-      correo: trimmedCorreo,
-      contrasenia: trimmedContrasenia,
+      nombre: cleanedNombre,
+      nombreUsuario: cleanedNombreUsuario,
+      correo: cleanedCorreo,
+      contrasenia: cleanedContrasenia,
       rol,
       estatus: 1,
-      telefono: trimmedTelefono,
+      telefono: cleanedTelefono,
       intentos: 0,
       idUsuario: 0,
       dateLastToken: new Date().toISOString(),
       direccion: {
         idDireccion: 0,
-        estado: trimmedEstado,
-        municipio: trimmedMunicipio,
-        codigoPostal: trimmedCodigoPostal,
-        colonia: trimmedColonia,
-        calle: trimmedCalle,
-        numExt: trimmedNumExt,
-        numInt: trimmedNumInt,
-        referencia: trimmedReferencia,
+        estado: cleanedEstado,
+        municipio: cleanedMunicipio,
+        codigoPostal: cleanedCodigoPostal,
+        colonia: cleanedColonia,
+        calle: cleanedCalle,
+        numExt: cleanedNumExt,
+        numInt: cleanedNumInt,
+        referencia: cleanedReferencia,
       },
-    };    
+    };
 
     try {
       await createUser(userData);

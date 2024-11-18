@@ -17,14 +17,11 @@ export const createUser = async (userData) => {
     });
 
     if (!response.ok) {
-      console.log('RESPONSE OK', response);
       throw new Error('Error creando el usuario');
     }
 
     const newUser = await response.json();
     const idCliente = newUser.idUsuario;
-
-    console.log('idCliente CREATE', idCliente);
 
     await createAgenteVenta(idCliente);
 

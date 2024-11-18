@@ -7,6 +7,7 @@ import useProductViewModel from '../viewmodels/ProductViewModel';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { API_BASE_PRUEBA } from '@env';
 import { getProductReviews } from '../services/ProductService';
+import { useToast } from 'react-native-toast-notifications';
 
 const API_URL = `${API_BASE_PRUEBA}/Ventum`;
 
@@ -18,6 +19,7 @@ export default function ProductScreen() {
   const [discount, setDiscount] = useState('');
   const [discountType, setDiscountType] = useState('%');
   const [email, setEmail] = useState('');
+  const toast = useToast();
 
   const route = useRoute();
   const [isProductScreenFocused, setIsProductScreenFocused] = useState(false);
@@ -63,10 +65,43 @@ export default function ProductScreen() {
     }
   };
 
+  const isValidEmail = (email) => {
+    const [localPart, domainPart] = email.split('@');
+  
+    if (!localPart || !domainPart) return false;
+  
+    const localPartRegex = /^[a-zA-Z0-9._%+-]+$/;
+    if (!localPartRegex.test(localPart)) return false;
+  
+    const domainPartRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return domainPartRegex.test(domainPart);
+  };
+
   const handleSendCotizacion = async () => {
+    const invalidItems = cart.filter(item => !item.quantity || parseInt(item.quantity) < 1);
+    
+    if (invalidItems.length > 0) {
+      toast.show('Por favor, verifica las cantidades en tu carrito.', {
+        type: 'danger',
+        text1: 'Cantidad Inválida',
+        text2: 'Asegúrate de que todos los productos tengan una cantidad mayor o igual a 1.',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast.show('Por favor, ingresa un correo válido.', {
+        type: 'danger',
+        text1: 'Correo Inválido',
+        text2: 'Asegúrate de proporcionar un correo electrónico válido.',
+        duration: 3000,
+      });
+      return;
+    }
+  
     try {
       const user = await AsyncStorage.getItem('user');
-      console.log('usuario storage', user);
       const parsedUser = JSON.parse(user);
       const { idUsuario } = parsedUser.user;
   
@@ -76,7 +111,7 @@ export default function ProductScreen() {
         items: cart.map(item => ({
           NombreProducto: item.nombreProducto,
           PrecioUnitario: item.precioVenta,
-          Cantidad: item.quantity,
+          Cantidad: parseInt(item.quantity),
         })),
         totalConDescuento: calculateDiscountedTotal(),
       };
