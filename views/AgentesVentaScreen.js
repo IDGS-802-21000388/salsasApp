@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAgentesVentaViewModel } from '../viewmodels/AgentesVentasViewModel';
 
 const groupAgentesConClientes = (agentes) => {
@@ -25,23 +26,24 @@ const groupAgentesConClientes = (agentes) => {
 };
 
 const AgentesVentaScreen = () => {
-  const { agentesVenta, loading, error } = useAgentesVentaViewModel();
-
-  // Agrupar agentes y sus clientes
+  const { agentesVenta, loading, error, fetchAgentesVenta } = useAgentesVentaViewModel();
   const groupedAgentes = groupAgentesConClientes(agentesVenta);
 
-  // Estado para controlar qué cliente está seleccionado
-  const [selectedClient, setSelectedClient] = React.useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   const handleClientPress = (cliente) => {
     if (selectedClient && selectedClient.idAgentesVenta === cliente.idAgentesVenta) {
-      // Si el cliente ya está seleccionado, lo deseleccionamos
       setSelectedClient(null);
     } else {
-      // De lo contrario, seleccionamos el nuevo cliente
       setSelectedClient(cliente);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAgentesVenta(); 
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <View style={styles.agentContainer}>
@@ -55,7 +57,6 @@ const AgentesVentaScreen = () => {
             <Text style={styles.clientName}>Cliente: {cliente.nombreCliente}</Text>
           </TouchableOpacity>
 
-          {/* Mostrar los detalles si el cliente está seleccionado */}
           {selectedClient && selectedClient.idAgentesVenta === cliente.idAgentesVenta && (
             <View style={styles.details}>
               <Text style={styles.detailText}>Correo: {cliente.correoCliente}</Text>
@@ -120,15 +121,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   clientButton: {
-    backgroundColor: '#217765', // Fondo claro
+    backgroundColor: '#217765', 
     padding: 10,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: '#ccc', // Borde sutil
+    borderColor: '#ccc', 
     marginVertical: 5,
   },
   clientName: {
-    color: "white", // Texto oscuro
+    color: "white", 
     fontSize: 16,
   },
   details: {
