@@ -257,6 +257,7 @@ const UserScreen = () => {
                 onChangeText={(text) => setNumInt(text.trim())}
                 placeholder="Número Interior (Opcional)"
                 maxLength={10}
+                keyboardType="numeric"
                 borderColor="#217765"
                 borderRadius={8}
                 _focus={{ borderColor: '#c31a23' }}
