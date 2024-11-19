@@ -11,12 +11,12 @@ const ComparacionScreen = () => {
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
     const [showEndDatePicker, setShowEndDatePicker] = useState(false);
     const [showDefaultChart, setShowDefaultChart] = useState(true);
-    const [hasGenerated, setHasGenerated] = useState(false); 
+    const [hasGenerated, setHasGenerated] = useState(false);
     const { salesData, purchasesData, profitsData, loading, fetchData } = ComparacionViewModel(startDate, endDate, year);
 
     const onStartDateChange = (event, selectedDate) => {
         setShowStartDatePicker(false);
-        if (selectedDate && selectedDate <= endDate) { 
+        if (selectedDate && selectedDate <= endDate) {
             setStartDate(selectedDate);
         } else {
             alert("La fecha de inicio no puede ser después de la fecha de fin");
@@ -25,7 +25,7 @@ const ComparacionScreen = () => {
 
     const onEndDateChange = (event, selectedDate) => {
         setShowEndDatePicker(false);
-        if (selectedDate && selectedDate >= startDate) {  
+        if (selectedDate && selectedDate >= startDate) {
             setEndDate(selectedDate);
         } else {
             alert("La fecha de fin no puede ser antes de la fecha de inicio");
@@ -41,21 +41,35 @@ const ComparacionScreen = () => {
     };
 
     const handleGenerate = async () => {
-        await fetchData(); 
+        await fetchData();
 
         const totalSales = calculateTotal(salesData);
         const totalPurchases = calculateTotal(purchasesData);
+        const totalProfits = calculateTotal(profitsData);
 
-        if (totalSales === 0 && totalPurchases === 0) {
-            Alert.alert("No hay datos", "No se encontraron ventas ni compras para la fecha seleccionada.");
+        if (totalSales === 0 && totalPurchases === 0 && totalProfits === 0) {
+            Alert.alert("No hay datos", "No se encontraron ventas, compras ni ganancias para la fecha seleccionada.");
             setShowDefaultChart(true); 
             setHasGenerated(false); 
-            return; 
+            return;
         }
 
         setShowDefaultChart(false); 
         setHasGenerated(true); 
     };
+
+    const handleYearChange = (text) => {
+        if (/^\d{0,4}$/.test(text)) {
+            const inputYear = parseInt(text, 10);
+            if (inputYear > 2024) {
+                Alert.alert("Año no válido", "El año no puede ser mayor a 2024.");
+            } else {
+                setYear(text);
+            }
+        }
+    };
+
+    const isYearValid = year && year.length === 4 && parseInt(year) <= 2024;
 
     return (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -67,7 +81,7 @@ const ComparacionScreen = () => {
                     style={styles.input}
                     value={year}
                     keyboardType="numeric"
-                    onChangeText={setYear}
+                    onChangeText={handleYearChange}
                 />
             </View>
 
@@ -107,14 +121,19 @@ const ComparacionScreen = () => {
             </View>
 
             <View style={styles.buttonRow}>
-                <Button title="Generar" onPress={handleGenerate} color="#e4007c" />
+                <Button
+                    title="Generar"
+                    onPress={handleGenerate}
+                    color="#e4007c"
+                    disabled={!isYearValid} 
+                />
                 <Button title="Limpiar" onPress={() => {
-                setYear('2024'); 
-                setStartDate(new Date());
-                setEndDate(new Date()); 
-                setShowDefaultChart(true); 
-                setHasGenerated(false); 
-            }} color="#c31a23" />
+                    setYear('2024'); 
+                    setStartDate(new Date());
+                    setEndDate(new Date()); 
+                    setShowDefaultChart(true); 
+                    setHasGenerated(false); 
+                }} color="#c31a23" />
             </View>
 
             {loading ? (
@@ -212,45 +231,42 @@ const chartConfig = {
     labelColor: (opacity = 1) => `rgba(131, 167, 234, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.5,
+    useShadowColorFromDataset: false
 };
 
 const styles = StyleSheet.create({
     scrollContainer: {
-        padding: 16,
+        padding: 16
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 16,
-    },
-    formRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    label: {
-        flex: 1,
-        fontSize: 18,
-    },
-    input: {
-        flex: 2,
-        borderColor: '#ccc',
-        borderWidth: 1,
-        borderRadius: 4,
-        padding: 8,
-        marginLeft: 8,
-    },
-    buttonRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 12,
+        marginBottom: 16
     },
     subtitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        color: '#217765',
-        marginTop: 16,
+        marginVertical: 8
     },
+    formRow: {
+        marginVertical: 8,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 8
+    },
+    input: {
+        height: 40,
+        borderColor: '#ccc',
+        borderWidth: 1,
+        borderRadius: 8,
+        paddingLeft: 10,
+    },
+    buttonRow: {
+        marginTop: 16,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    }
 });
 
 export default ComparacionScreen;

@@ -40,12 +40,11 @@ export const useAgentesVentaViewModel = () => {
     }
   };
 
-  // Incluir fetchAgentesVenta en el retorno
   return {
     agentesVenta,
     loading,
     error,
-    fetchAgentesVenta, // Asegúrate de exportarlo aquí
+    fetchAgentesVenta, 
   };
 };
 

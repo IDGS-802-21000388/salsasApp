@@ -41,7 +41,7 @@ const AgentesVentaScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchAgentesVenta(); // Llama a la función para recargar datos al enfocar la pantalla
+      fetchAgentesVenta(); 
     }, [])
   );
 
