@@ -39,8 +39,8 @@ export default function useProductViewModel() {
         duration: 2000,
       });
     } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
-      setQuantities({ ...quantities, [product.idProducto]: 1 });
+      setCart([...cart, { ...product, quantity: '' }]);
+      setQuantities({ ...quantities, [product.idProducto]: '' });
       toast.show('Producto agregado al carrito.', {
         type: 'success',
         text1: 'Producto Agregado',
@@ -66,13 +66,12 @@ export default function useProductViewModel() {
   };
 
   const handleQuantityChange = (idProducto, value) => {
-    const quantity = parseInt(value) || 1;
-    setQuantities({ ...quantities, [idProducto]: quantity });
-    setCart(cart.map(item => item.idProducto === idProducto ? { ...item, quantity } : item));
+    setQuantities({ ...quantities, [idProducto]: value });
+    setCart(cart.map(item => item.idProducto === idProducto ? { ...item, quantity: value } : item));
   };
 
   const calculateSubtotal = () => {
-    return cart.reduce((acc, item) => acc + item.precioVenta * item.quantity, 0);
+    return cart.reduce((acc, item) => acc + (parseFloat(item.precioVenta) * (parseInt(item.quantity) || 0)), 0);
   };
 
   const calculateIVA = (subtotal) => {

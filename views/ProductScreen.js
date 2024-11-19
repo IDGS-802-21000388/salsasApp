@@ -1,27 +1,136 @@
-import React, { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useCallback } from 'react';
 import { FlatList, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input } from 'native-base';
+import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input, Select } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import useProductViewModel from '../viewmodels/ProductViewModel';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { API_BASE_PRUEBA } from '@env';
 import { getProductReviews } from '../services/ProductService';
+import { useToast } from 'react-native-toast-notifications';
+
+const API_URL = `${API_BASE_PRUEBA}/Ventum`;
 
 export default function ProductScreen() {
   const { products, loading, error, cart, quantities, handleAddToCart, handleRemoveFromCart, handleQuantityChange, calculateSubtotal, calculateIVA } = useProductViewModel();
   const [showCart, setShowCart] = useState(false);
   const [showTestimonios, setShowTestimonios] = useState(false);
   const [testimonios, setTestimonios] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [discount, setDiscount] = useState('');
+  const [discountType, setDiscountType] = useState('%');
+  const [email, setEmail] = useState('');
+  const toast = useToast();
+
+  const route = useRoute();
+  const [isProductScreenFocused, setIsProductScreenFocused] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (route.name === 'products') {
+        setIsProductScreenFocused(true);
+      } else {
+        setIsProductScreenFocused(false);
+      }
+      return () => setIsProductScreenFocused(false);
+    }, [route.name])
+  );
 
   const fetchTestimonios = async (idProducto) => {
-    console.log('Fetching testimonials for product:', idProducto);
     try {
       const reviews = await getProductReviews(idProducto);
       setTestimonios(reviews);
       setShowTestimonios(true);
-      console.log('Testimonios:', reviews);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
-      console.log('Error fetching testimonials:', error);
+    }
+  };
+
+  const calculateDiscountedTotal = () => {
+    const subtotal = calculateSubtotal();
+    let total = subtotal + calculateIVA(subtotal);
+    
+    if (discountType === '%' && discount !== '') {
+      total -= (subtotal * parseFloat(discount)) / 100;
+    } else if (discountType === '$' && discount !== '') {
+      total -= parseFloat(discount);
+    }
+    return total > 0 ? total : 0;
+  };
+
+  const handleDiscountChange = (value) => {
+    if (value === '') {
+      setDiscount('');
+    } else if (!isNaN(value)) {
+      setDiscount(value);
+    }
+  };
+
+  const isValidEmail = (email) => {
+    const [localPart, domainPart] = email.split('@');
+  
+    if (!localPart || !domainPart) return false;
+  
+    const localPartRegex = /^[a-zA-Z0-9._%+-]+$/;
+    if (!localPartRegex.test(localPart)) return false;
+  
+    const domainPartRegex = /^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return domainPartRegex.test(domainPart);
+  };
+
+  const handleSendCotizacion = async () => {
+    const invalidItems = cart.filter(item => !item.quantity || parseInt(item.quantity) < 1);
+    
+    if (invalidItems.length > 0) {
+      toast.show('Por favor, verifica las cantidades en tu carrito.', {
+        type: 'danger',
+        text1: 'Cantidad Inválida',
+        text2: 'Asegúrate de que todos los productos tengan una cantidad mayor o igual a 1.',
+        duration: 3000,
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast.show('Por favor, ingresa un correo válido.', {
+        type: 'danger',
+        text1: 'Correo Inválido',
+        text2: 'Asegúrate de proporcionar un correo electrónico válido.',
+        duration: 3000,
+      });
+      return;
+    }
+  
+    try {
+      const user = await AsyncStorage.getItem('user');
+      const parsedUser = JSON.parse(user);
+      const { idUsuario } = parsedUser.user;
+  
+      const cotizacionData = {
+        email,
+        idUsuario,
+        items: cart.map(item => ({
+          NombreProducto: item.nombreProducto,
+          PrecioUnitario: item.precioVenta,
+          Cantidad: parseInt(item.quantity),
+        })),
+        totalConDescuento: calculateDiscountedTotal(),
+      };
+  
+      console.log('Datos enviados a la API:', cotizacionData);
+  
+      const response = await fetch(`${API_BASE_PRUEBA}/cotizacion/enviar-cotizacion`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cotizacionData),
+      });
+  
+      if (response.ok) {
+        alert('Cotización enviada correctamente');
+      } else {
+        alert('Error al enviar la cotización');
+      }
+    } catch (error) {
+      console.error('Error al enviar la cotización:', error);
     }
   };
 
@@ -85,9 +194,34 @@ export default function ProductScreen() {
         </Box>
       ))}
       <Box style={styles.totalBox}>
+        <HStack alignItems="center" justifyContent="space-between">
+          <Input
+            placeholder="Descuento"
+            keyboardType="numeric"
+            value={discount}
+            onChangeText={handleDiscountChange}
+            w="45%"
+          />
+          <Select
+            selectedValue={discountType}
+            minWidth="120"
+            onValueChange={(value) => setDiscountType(value)}
+          >
+            <Select.Item label="%" value="%" />
+            <Select.Item label="$" value="$" />
+          </Select>
+        </HStack>
+
+        <Input
+          placeholder="Ingresa el correo electrónico"
+          value={email}
+          onChangeText={setEmail}
+          mt={4}
+        />
+
         <Text style={styles.totalText}>Subtotal: ${calculateSubtotal()}</Text>
         <Text style={styles.totalText}>IVA (16%): ${calculateIVA(calculateSubtotal()).toFixed(2)}</Text>
-        <Text style={styles.totalText}>Total: ${(calculateSubtotal() + calculateIVA(calculateSubtotal())).toFixed(2)}</Text>
+        <Text style={styles.totalText}>Total con Descuento: ${calculateDiscountedTotal().toFixed(2)}</Text>
       </Box>
     </ScrollView>
   );
@@ -112,16 +246,18 @@ export default function ProductScreen() {
               contentContainerStyle={styles.productList}
             />
 
-            <Fab
-              position="absolute"
-              bottom={70}
-              right={5}
-              size="lg"
-              icon={<Icon color="white" as={Ionicons} name="cart-outline" size="lg" />}
-              onPress={() => setShowCart(true)}
-              backgroundColor="#217765"
-              shadow={2}
-            />
+            {isProductScreenFocused && (
+              <Fab
+                position="absolute"
+                bottom={70}
+                right={5}
+                size="lg"
+                icon={<Icon color="white" as={Ionicons} name="cart-outline" size="lg" />}
+                onPress={() => setShowCart(true)}
+                backgroundColor="#217765"
+                shadow={2}
+              />
+            )}
 
             <Modal isOpen={showCart} onClose={() => setShowCart(false)} size="lg">
               <Modal.Content maxWidth="400px">
@@ -129,8 +265,8 @@ export default function ProductScreen() {
                 <Modal.Header>Carrito</Modal.Header>
                 <Modal.Body>{renderCartItems()}</Modal.Body>
                 <Modal.Footer>
-                  <Button w="100%" onPress={() => setShowCart(false)} backgroundColor="#217765">
-                    <Text style={styles.buttonText}>Cerrar</Text>
+                  <Button w="100%" onPress={handleSendCotizacion} backgroundColor="#217765">
+                    <Text style={styles.buttonText}>Enviar Cotización</Text>
                   </Button>
                 </Modal.Footer>
               </Modal.Content>
@@ -164,7 +300,7 @@ export default function ProductScreen() {
 const styles = StyleSheet.create({
   productList: { 
     paddingHorizontal: 20,
-    paddingBottom: 20 ,
+    paddingBottom: 20,
   },
   productBox: {
     backgroundColor: '#fff',

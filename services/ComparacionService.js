@@ -1,6 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  API_BASE_PRUEBA
+} from '@env';
 
-const apiUrl = 'http://10.16.22.237:7215/api/Reports';
+const apiUrl = `${API_BASE_PRUEBA}/Reports`;
 
 const ComparacionService = {
   getTotalSales: async (startDate, endDate) => {

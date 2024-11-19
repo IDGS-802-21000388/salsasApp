@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAgentesVentaViewModel } from '../viewmodels/AgentesVentasViewModel';
 
 const groupAgentesConClientes = (agentes) => {
@@ -25,11 +26,10 @@ const groupAgentesConClientes = (agentes) => {
 };
 
 const AgentesVentaScreen = () => {
-  const { agentesVenta, loading, error } = useAgentesVentaViewModel();
-
+  const { agentesVenta, loading, error, fetchAgentesVenta } = useAgentesVentaViewModel();
   const groupedAgentes = groupAgentesConClientes(agentesVenta);
 
-  const [selectedClient, setSelectedClient] = React.useState(null);
+  const [selectedClient, setSelectedClient] = useState(null);
 
   const handleClientPress = (cliente) => {
     if (selectedClient && selectedClient.idAgentesVenta === cliente.idAgentesVenta) {
@@ -38,6 +38,12 @@ const AgentesVentaScreen = () => {
       setSelectedClient(cliente);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchAgentesVenta(); // Llama a la función para recargar datos al enfocar la pantalla
+    }, [])
+  );
 
   const renderItem = ({ item }) => (
     <View style={styles.agentContainer}>

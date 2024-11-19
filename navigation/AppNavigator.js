@@ -7,12 +7,13 @@ import UserScreen from '../views/UserScreen';
 import EncuestasScreen from "../views/EncuestasScreen";
 import TypePromoScreen from '../views/TypePromoScreen';
 import ProductScreen from '../views/ProductScreen';
-import ContactRegistrationScreen from '../views/ContactRegistrationScreen'; // Import the new screen
+import ContactRegistrationScreen from '../views/ContactRegistrationScreen';
 import { Ionicons } from '@expo/vector-icons';
-import RenipointsHistoryScreen from '../views/RenipointsHistoryScreen';
 import ComparacionScreen from '../views/ComparacionScreen';
-import AgentesVentaScreen from '../views/AgentesVentaScreen'; // Importa el componente de Agentes de Venta
+import AgentesVentaScreen from '../views/AgentesVentaScreen';
 import ClientesScreen from '../views/ClientesScreen';
+import QuejasScreen from '../views/QuejasScreen';
+import CotizacionesScreen from '../views/CotizacionesScreen'; // Import the new screen
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -74,17 +75,7 @@ function DrawerNavigator() {
         options={{
           title: 'Promociones por Tipo',
           drawerIcon: ({ color }) => (
-            <Ionicons name="megaphone-outline" size={24} color={color} /> // Updated icon
-          ),
-        }}
-      />
-      <Drawer.Screen 
-        name="ReniPointsScreen" 
-        component={RenipointsHistoryScreen} 
-        options={{
-          title: 'Historial de Renipoints',
-          drawerIcon: ({ color }) => (
-            <Ionicons name="bag" size={24} color={color} />
+            <Ionicons name="megaphone-outline" size={24} color={color} />
           ),
         }}
       />
@@ -108,8 +99,7 @@ function DrawerNavigator() {
           ),
         }}
       />
-
-    <Drawer.Screen 
+      <Drawer.Screen 
         name="ClientesScreen" 
         component={ClientesScreen} 
         options={{
@@ -119,14 +109,33 @@ function DrawerNavigator() {
           ),
         }}
       />
-
       <Drawer.Screen 
         name="ContactRegistration" 
         component={ContactRegistrationScreen} 
         options={{
           title: 'Registro de Contacto', 
           drawerIcon: ({ color }) => (
-            <Ionicons name="contacts-outline" size={24} color={color} /> // New screen with appropriate icon
+            <Ionicons name="person-circle-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Quejas" 
+        component={QuejasScreen} 
+        options={{
+          title: 'Quejas', 
+          drawerIcon: ({ color }) => (
+            <Ionicons name="alert-circle-outline" size={24} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Cotizaciones" 
+        component={CotizacionesScreen} 
+        options={{
+          title: 'Cotizaciones', 
+          drawerIcon: ({ color }) => (
+            <Ionicons name="document-text-outline" size={24} color={color} />
           ),
         }}
       />

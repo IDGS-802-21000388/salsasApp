@@ -19,7 +19,6 @@ export const useAgentesVentaViewModel = () => {
       const parsedData = JSON.parse(userData);
   
       const user = parsedData.user;  
-  
       console.log('Datos del usuario:', user); 
   
       const agentes = await getAgentesVenta();
@@ -40,12 +39,14 @@ export const useAgentesVentaViewModel = () => {
       setLoading(false);
     }
   };
-  
 
+  // Incluir fetchAgentesVenta en el retorno
   return {
     agentesVenta,
     loading,
     error,
+    fetchAgentesVenta, // Asegúrate de exportarlo aquí
   };
 };
+
 

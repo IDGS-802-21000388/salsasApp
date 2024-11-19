@@ -7,8 +7,7 @@ const BASE_URL = `${API_BASE_PRUEBA}/Usuarios`;
 
 export const createUser = async (userData) => {
   try {
-    console.log('userData', userData);
-
+    console.log('userData CREATE', userData);
     const response = await fetch(BASE_URL, {
       method: 'POST',
       headers: {
@@ -28,7 +27,7 @@ export const createUser = async (userData) => {
 
     return newUser;
   } catch (error) {
-    console.error('Error creando el usuario:', error);
+    console.error('Error creando el usuario catch:', error);
     throw error;
   }
 };
