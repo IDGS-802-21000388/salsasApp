@@ -68,6 +68,8 @@ const useUserViewModel = () => {
   };
 
   const handleCreateUser = async () => {
+    const cleanedNombre = nombre.trim();
+    const cleanedNombreUsuario = nombreUsuario.trim();
     const cleanedCorreo = correo.trim();
     const cleanedContrasenia = contrasenia.trim();
     const cleanedTelefono = telefono.trim();
