@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useState, useCallback } from 'react';
 import { FlatList, Image, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input, Select } from 'native-base';
+import { Box, Text, Button, VStack, HStack, Modal, Center, IconButton, Icon, Fab, Input, Select, Spinner } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import useProductViewModel from '../viewmodels/ProductViewModel';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
@@ -19,6 +19,7 @@ export default function ProductScreen() {
   const [discount, setDiscount] = useState('');
   const [discountType, setDiscountType] = useState('%');
   const [email, setEmail] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const route = useRoute();
@@ -101,6 +102,7 @@ export default function ProductScreen() {
     }
   
     try {
+      setIsLoading(true);
       const user = await AsyncStorage.getItem('user');
       const parsedUser = JSON.parse(user);
       const { idUsuario } = parsedUser.user;
@@ -125,12 +127,24 @@ export default function ProductScreen() {
       });
   
       if (response.ok) {
-        alert('Cotización enviada correctamente');
+        toast.show('Cotización enviada correctamente..', {
+          type: 'success',
+          text1: 'Cotización.',
+          text2: 'Cotización enviada correctamente.',
+          duration: 2000,
+        });
       } else {
-        alert('Error al enviar la cotización');
+        toast.show('Error al enviar la cotización.', {
+          type: 'danger',
+          text1: 'Error',
+          text2: 'Hubo un problema al enviar la cotización. Inténtalo nuevamente.',
+          duration: 3000,
+        });
       }
     } catch (error) {
       console.error('Error al enviar la cotización:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -259,15 +273,22 @@ export default function ProductScreen() {
               />
             )}
 
-            <Modal isOpen={showCart} onClose={() => setShowCart(false)} size="lg">
+            <Modal isOpen={showCart && !isLoading} onClose={() => setShowCart(false)} size="lg">
               <Modal.Content maxWidth="400px">
                 <Modal.CloseButton />
                 <Modal.Header>Carrito</Modal.Header>
                 <Modal.Body>{renderCartItems()}</Modal.Body>
                 <Modal.Footer>
-                  <Button w="100%" onPress={handleSendCotizacion} backgroundColor="#217765">
-                    <Text style={styles.buttonText}>Enviar Cotización</Text>
-                  </Button>
+                <Button
+                  w="100%"
+                  onPress={handleSendCotizacion}
+                  backgroundColor="#217765"
+                  isDisabled={isLoading}
+                  isLoading={isLoading}
+                  isLoadingText="Enviando..."
+                >
+                  <Text style={styles.buttonText}>Enviar Cotización</Text>
+                </Button>
                 </Modal.Footer>
               </Modal.Content>
             </Modal>
@@ -292,6 +313,22 @@ export default function ProductScreen() {
             </Modal>
           </>
         )}
+        {isLoading && (
+        <Box 
+          position="absolute" 
+          top={0} 
+          left={0} 
+          right={0} 
+          bottom={0} 
+          bg="rgba(0,0,0,0.5)" 
+          justifyContent="center" 
+          alignItems="center" 
+          zIndex={1000}
+        >
+          <Text color="white" fontSize="lg" mb={4}>Procesando...</Text>
+          <Spinner color="white" size="lg" />
+        </Box>
+    )}
       </VStack>
     </SafeAreaView>
   );
