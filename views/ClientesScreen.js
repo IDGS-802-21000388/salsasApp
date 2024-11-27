@@ -176,7 +176,7 @@ function ClientesScreen() {
     };
   
     try {
-      const response = await fetch(`${API_BASE_PRUEBA}/PromoPorTipo/enviar-promocion`, {
+      const response = await fetch(`${API_BASE_PRUEBA}/PromoPorTipo/enviar-ticket`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
